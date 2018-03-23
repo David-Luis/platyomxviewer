@@ -73,8 +73,8 @@ class VideoWidget(QGroupBox):
 
                 if not self.is_playing:
                     self.play_video(self.video_file["file_path"])
-
-                self.is_playing = False
+                else:
+                    self.is_playing = False
             else:
                 print(self.video_file)
                 self.is_playing = True
