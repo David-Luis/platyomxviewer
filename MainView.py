@@ -13,7 +13,7 @@ class MainView(QMainWindow):
         super().__init__()
 
         self.app = app
-        self.setGeometry(0, 20, 900, 700)
+        self.setGeometry(0, 30, 900, 700)
         self.setWindowTitle("Platy Omx Viewer")
 
         self.root_path = (str(Path.home()) + "/Downloads").replace("\\", "/")
