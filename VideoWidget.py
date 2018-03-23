@@ -38,11 +38,12 @@ class VideoWidget(QGroupBox):
         current_process = psutil.Process()
         children = current_process.children(recursive=True)
         print(children)
-        return children[2].pid
+        return children[-1].pid
 
     def play_video(self, file_path):
         self.videos_widget.playing_widget = self
-
+        self.is_playing = True
+        
         system = platform.system().lower()
         if "windows" in system:
             self.videos_widget.pro = subprocess.Popen("vlc " + '"' + file_path + '"', stdout=subprocess.PIPE,
@@ -68,16 +69,19 @@ class VideoWidget(QGroupBox):
                 os.kill(children_pid, signal.SIGTERM)
                 self.videos_widget.pro = None
 
+                is_playing = self.is_playing
+
                 self.videos_widget.playing_widget.set_stop_view()
                 self.videos_widget.playing_widget = None
 
-                if not self.is_playing:
+                print("_is_playing " + str(is_playing))
+
+                if not is_playing:
                     self.play_video(self.video_file["file_path"])
                 else:
                     self.is_playing = False
             else:
                 print(self.video_file)
-                self.is_playing = True
                 self.play_video(self.video_file["file_path"])
 
         except:
