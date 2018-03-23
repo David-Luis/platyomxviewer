@@ -37,7 +37,7 @@ class VideoWidget(QGroupBox):
             if self.pro:
                 os.killpg(os.getpgid(self.pro.pid), signal.SIGTERM)
             else:
-                self.pro = subprocess.call(["omxplayer", self.video_file["file_path"]])
+                self.pro = subprocess.Popen("omxplayer " + self.video_file["file_path"], shell=True)
 
         except:
             print(sys.exc_info()[0])
