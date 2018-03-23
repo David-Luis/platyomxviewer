@@ -41,9 +41,9 @@ class VideoWidget(QGroupBox):
         return children[2].pid
 
     def play_video(self, file_path):
-        system = platform.system().lower()
+        self.videos_widget.playing_widget = self
 
-        print(file_path)
+        system = platform.system().lower()
         if "windows" in system:
             self.videos_widget.pro = subprocess.Popen("vlc " + '"' + file_path + '"', stdout=subprocess.PIPE,
                                                       shell=True)
@@ -52,6 +52,10 @@ class VideoWidget(QGroupBox):
                                                   shell=True)
 
         pixmap = QPixmap('stop.png')
+        self.bt_image.set_pixmap(pixmap)
+
+    def set_stop_view(self):
+        pixmap = QPixmap('loading.png')
         self.bt_image.set_pixmap(pixmap)
         
     def on_clicked(self):
@@ -62,6 +66,9 @@ class VideoWidget(QGroupBox):
                 children_pid = self.children_pid(self.videos_widget.pro)
                 os.kill(children_pid, signal.SIGTERM)
                 self.videos_widget.pro = None
+
+                self.videos_widget.playing_widget.set_stop_view()
+                self.videos_widget.playing_widget = None
 
                 if not self.is_playing:
                     self.play_video(self.video_file["file_path"])

@@ -11,6 +11,7 @@ class VideosListWidget(QWidget):
         self.current_row = 0
         self.current_col = 0
         self.pro = None #current video process
+        self.playing_widget = None
 
         self.file_layout = QGridLayout()
         self.main_widget = QWidget()
