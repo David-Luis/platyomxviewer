@@ -57,6 +57,7 @@ class VideoWidget(QGroupBox):
     def set_stop_view(self):
         pixmap = QPixmap('loading.png')
         self.bt_image.set_pixmap(pixmap)
+        self.is_playing = False
         
     def on_clicked(self):
         try:
