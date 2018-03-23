@@ -6,6 +6,9 @@ class PicButton(QAbstractButton):
         super(PicButton, self).__init__(parent)
         self.pixmap = pixmap
 
+    def set_pixmap(self, pixmap):
+        self.pixmap = pixmap
+
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.drawPixmap(event.rect(), self.pixmap)

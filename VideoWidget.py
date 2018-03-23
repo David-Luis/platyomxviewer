@@ -8,15 +8,17 @@ import subprocess
 import os
 import signal
 import sys
+import platform
 
 class VideoWidget(QGroupBox):
-    def __init__(self, video_file):
+    def __init__(self, video_file, videos_widget):
         super().__init__()
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)
 
+        self.videos_widget = videos_widget
         self.video_file = video_file
-        self.pro = None
+        self.is_playing = False
 
         self.setToolTip(video_file["filename"])
 
@@ -37,18 +39,38 @@ class VideoWidget(QGroupBox):
         children = current_process.children(recursive=True)
         print(children)
         return children[2].pid
+
+    def play_video(self, file_path):
+        system = platform.system().lower()
+
+        print(file_path)
+        if "windows" in system:
+            self.videos_widget.pro = subprocess.Popen("vlc " + '"' + file_path + '"', stdout=subprocess.PIPE,
+                                                      shell=True)
+        else:
+            self.videos_widget.pro = subprocess.Popen("omxplayer " + file_path, stdout=subprocess.PIPE,
+                                                  shell=True)
+
+        pixmap = QPixmap('stop.png')
+        self.bt_image.set_pixmap(pixmap)
         
     def on_clicked(self):
         try:
             
-            if self.pro:
+            if self.videos_widget.pro:
                 print("stop")
-                children_pid = self.children_pid(self.pro.pid)
+                children_pid = self.children_pid(self.videos_widget.pro)
                 os.kill(children_pid, signal.SIGTERM)
-                self.pro = None
+                self.videos_widget.pro = None
+
+                if not self.is_playing:
+                    self.play_video(self.video_file["file_path"])
+
+                self.is_playing = False
             else:
                 print(self.video_file)
-                self.pro = subprocess.Popen("omxplayer " + self.video_file["file_path"], stdout=subprocess.PIPE, shell=True)
+                self.is_playing = True
+                self.play_video(self.video_file["file_path"])
 
         except:
             print(sys.exc_info()[0])

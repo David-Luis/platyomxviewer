@@ -53,7 +53,7 @@ class MainView(QMainWindow):
         self.create_videos_container()
 
         for video_file in self.video_files:
-            video_widget = VideoWidget(video_file)
+            video_widget = VideoWidget(video_file, self.videos_widget)
             self.videos_widget.add_video(video_widget)
 
 
