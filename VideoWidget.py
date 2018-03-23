@@ -5,6 +5,8 @@ from PyQt5.QtCore import *
 from PicButton import PicButton
 
 import subprocess
+import os
+import signal
 import sys
 
 class VideoWidget(QGroupBox):
@@ -14,6 +16,8 @@ class VideoWidget(QGroupBox):
         self.setLayout(self.main_layout)
 
         self.video_file = video_file
+        self.pro = None
+
         self.setToolTip(video_file["filename"])
 
         pixmap = QPixmap('loading.png')
@@ -30,7 +34,11 @@ class VideoWidget(QGroupBox):
     def on_clicked(self):
         try:
             print(self.video_file)
-            subprocess.call(["omxplayer", self.video_file["file_path"]])
+            if self.pro:
+                os.killpg(os.getpgid(self.pro.pid), signal.SIGTERM)
+            else:
+                self.pro = subprocess.call(["omxplayer", self.video_file["file_path"]])
+
         except:
             print(sys.exc_info()[0])
             print(sys.exc_info()[1])
