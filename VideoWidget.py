@@ -30,15 +30,25 @@ class VideoWidget(QGroupBox):
         self.main_layout.addWidget(self.lb_name)
 
         self.setMaximumSize(256, 256)
-
+    
+    def children_pid(self, pid):
+        import psutil
+        current_process = psutil.Process()
+        children = current_process.children(recursive=True)
+        print(children)
+        return children[2].pid
+        
     def on_clicked(self):
         try:
-            print(self.video_file)
+            
             if self.pro:
-                #os.killpg(os.getpgid(self.pro.pid), signal.SIGTERM)
-                self.kill()
+                print("stop")
+                children_pid = self.children_pid(self.pro.pid)
+                os.kill(children_pid, signal.SIGTERM)
+                self.pro = None
             else:
-                self.pro = subprocess.Popen("omxplayer " + self.video_file["file_path"], shell=True)
+                print(self.video_file)
+                self.pro = subprocess.Popen("omxplayer " + self.video_file["file_path"], stdout=subprocess.PIPE, shell=True)
 
         except:
             print(sys.exc_info()[0])
