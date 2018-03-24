@@ -9,6 +9,7 @@ import os
 import signal
 import sys
 import platform
+import pexpect
 
 class VideoWidget(QGroupBox):
     def __init__(self, video_file, videos_widget):
@@ -46,11 +47,10 @@ class VideoWidget(QGroupBox):
         
         system = platform.system().lower()
         if "windows" in system:
-            self.videos_widget.pro = subprocess.Popen("vlc " + '"' + file_path + '"', stdout=subprocess.PIPE,
-                                                      shell=True)
+            pexpect.spawn("vlc " + '"' + file_path)
         else:
-            self.videos_widget.pro = subprocess.Popen("omxplayer " + file_path, stdout=subprocess.PIPE,
-                                                  shell=True)
+            pexpect.spawn("omxplayer " + file_path)
+            #self.videos_widget.pro = subprocess.Popen("omxplayer " + file_path, stdout=subprocess.PIPE, shell=True)
 
         pixmap = QPixmap('stop.png')
         self.bt_image.set_pixmap(pixmap)
