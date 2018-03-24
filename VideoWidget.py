@@ -2,28 +2,27 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import *
 
-from PicButton import PicButton
+from pathlib import Path
 
-import subprocess
+from PicButton import PicButton
+import OmxPlayer
+
 import os
-import signal
-import sys
-import platform
-import pexpect
+
+import ffmpy
 
 class VideoWidget(QGroupBox):
-    def __init__(self, video_file, videos_widget):
+    def __init__(self, video_file):
         super().__init__()
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)
 
-        self.videos_widget = videos_widget
         self.video_file = video_file
         self.is_playing = False
 
         self.setToolTip(video_file["filename"])
 
-        pixmap = QPixmap('loading.png')
+        pixmap = QPixmap('data/loading.png')
         self.bt_image = PicButton(pixmap)
         self.main_layout.addWidget(self.bt_image)
         self.bt_image.clicked.connect(self.on_clicked)
@@ -33,57 +32,26 @@ class VideoWidget(QGroupBox):
         self.main_layout.addWidget(self.lb_name)
 
         self.setMaximumSize(256, 256)
-    
-    def children_pid(self, pid):
-        import psutil
-        current_process = psutil.Process()
-        children = current_process.children(recursive=True)
-        print(children)
-        return children[-1].pid
+        output_folder = video_file["file_path"].split("/")[0:-1]
 
-    def play_video(self, file_path):
-        self.videos_widget.playing_widget = self
-        self.is_playing = True
-        
-        system = platform.system().lower()
-        if "windows" in system:
-            pexpect.spawn("vlc " + '"' + file_path)
-        else:
-            pexpect.spawn("omxplayer " + file_path)
-            #self.videos_widget.pro = subprocess.Popen("omxplayer " + file_path, stdout=subprocess.PIPE, shell=True)
+        self.create_preview_img()
 
-        pixmap = QPixmap('stop.png')
+    def create_preview_img(self):
+        output_folder = (str(Path.home()) + "/.platyomxplayertmp/").replace("\\", "/")
+        if not os.path.isdir(output_folder):
+            os.makedirs(output_folder)
+
+        output_path = output_folder + self.video_file["filename"] + ".jpg"
+        if not os.path.isfile(output_path):
+            ff = ffmpy.FFmpeg(inputs={self.video_file["file_path"]: None},
+                              outputs={output_path: '-ss 00:00:04 -t 00:00:2 -s 220x124 -r 1 -f mjpeg'})
+            ff.run()
+
+        self.set_img_preview(output_path)
+
+    def set_img_preview(self, path):
+        pixmap = QPixmap(path)
         self.bt_image.set_pixmap(pixmap)
 
-    def set_stop_view(self):
-        pixmap = QPixmap('loading.png')
-        self.bt_image.set_pixmap(pixmap)
-        self.is_playing = False
-        
     def on_clicked(self):
-        try:
-            
-            if self.videos_widget.pro:
-                print("stop")
-                children_pid = self.children_pid(self.videos_widget.pro)
-                os.kill(children_pid, signal.SIGTERM)
-                self.videos_widget.pro = None
-
-                is_playing = self.is_playing
-
-                self.videos_widget.playing_widget.set_stop_view()
-                self.videos_widget.playing_widget = None
-
-                print("_is_playing " + str(is_playing))
-
-                if not is_playing:
-                    self.play_video(self.video_file["file_path"])
-                else:
-                    self.is_playing = False
-            else:
-                print(self.video_file)
-                self.play_video(self.video_file["file_path"])
-
-        except:
-            print(sys.exc_info()[0])
-            print(sys.exc_info()[1])
+        OmxPlayer.play(self.video_file["file_path"])
