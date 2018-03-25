@@ -24,7 +24,7 @@ class OmxPlayer():
                 self.process = pexpect.spawn("vlc " + + file_path)
             else:
                 print("SPAWN " + file_path)
-                self.process = pexpect.spawn('omxplayer "' + file_path + '"')
+                self.process = pexpect.spawn('omxplayer "' + file_path + '"' + ' --align center')
                 self.observer.on_play()
                 self.state = OmxPlayer.PLAYING
         except:
