@@ -63,13 +63,30 @@ class MainView(QMainWindow):
             
     def create_control_buttons(self):
         self.buttons_layout = QHBoxLayout()
+        self.buttons_layout.setAlignment(Qt.AlignCenter)
         self.main_layout.addLayout(self.buttons_layout)
         
-        pixmap = QPixmap('data/pause.png')
+        pixmap = QPixmap('data/play.png')
         self.bt_pause = PicButton(pixmap)
         self.bt_pause.setMaximumSize(100,100)
-        self.buttons_layout.addWidget(self.bt_pause)
         self.bt_pause.clicked.connect(OmxPlayer.instance.pause_resume)
+        
+        pixmap = QPixmap('data/stop.png')
+        self.bt_stop = PicButton(pixmap)
+        self.bt_stop.setMaximumSize(100,100)
+        self.bt_stop.clicked.connect(OmxPlayer.instance.stop)
+        
+        self.buttons_layout.addWidget(self.bt_pause)
+        self.buttons_layout.addWidget(self.bt_stop)
+        
+    def on_play():
+        pass
+    
+    def on_paused():
+        pass
+    
+    def on_stop():
+        pass
 
 
 
