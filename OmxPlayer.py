@@ -21,10 +21,10 @@ class OmxPlayer():
         try:
             system = platform.system().lower()
             if "windows" in system:
-                self.process = pexpect.spawn("vlc " + '"' + file_path)
+                self.process = pexpect.spawn("vlc " + + file_path)
             else:
                 print("SPAWN " + file_path)
-                self.process = pexpect.spawn("omxplayer " + file_path)
+                self.process = pexpect.spawn('omxplayer "' + file_path + '"')
                 self.observer.on_play()
                 self.state = OmxPlayer.PLAYING
         except:

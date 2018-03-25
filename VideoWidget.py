@@ -46,7 +46,7 @@ class VideoWidget(QGroupBox):
             ff = ffmpy.FFmpeg(inputs={self.video_file["file_path"]: None},
                               outputs={output_path: '-ss 00:00:04 -t 00:00:2 -s 220x124 -r 1 -f mjpeg'})
             ff.run()
-
+            
         self.set_img_preview(output_path)
 
     def set_img_preview(self, path):
