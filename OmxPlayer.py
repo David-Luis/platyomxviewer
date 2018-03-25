@@ -59,4 +59,14 @@ class OmxPlayer():
         if self.process and self.state == OmxPlayer.PLAYING:
             print("Sending right")
             self.process.send('\x1b\x5b\x43')
+            
+    def back_s(self):
+        if self.process and self.state == OmxPlayer.PLAYING:
+            print("Sending left")
+            self.process.send('\x1b\x5b\x42')
+            
+    def forward_s(self):
+        if self.process and self.state == OmxPlayer.PLAYING:
+            print("Sending right")
+            self.process.send('\x1b\x5b\x41')
     
