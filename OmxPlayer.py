@@ -62,11 +62,21 @@ class OmxPlayer():
             
     def back_s(self):
         if self.process and self.state == OmxPlayer.PLAYING:
-            print("Sending left")
+            print("Sending down")
             self.process.send('\x1b\x5b\x42')
             
     def forward_s(self):
         if self.process and self.state == OmxPlayer.PLAYING:
-            print("Sending right")
+            print("Sending up")
             self.process.send('\x1b\x5b\x41')
+            
+    def sub_back(self):
+        if self.process and self.state == OmxPlayer.PLAYING:
+            print("Sending d")
+            self.process.send('d')
+            
+    def sub_forward(self):
+        if self.process and self.state == OmxPlayer.PLAYING:
+            print("Sending f")
+            self.process.send('f')
     

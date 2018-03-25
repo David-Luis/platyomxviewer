@@ -98,12 +98,24 @@ class MainView(QMainWindow):
         self.bt_forward_s.setMaximumSize(size_buttons,size_buttons)
         self.bt_forward_s.clicked.connect(OmxPlayer.instance.forward_s)
         
+        pixmap = QPixmap('data/sub_back.png')
+        self.bt_sub_back = PicButton(pixmap)
+        self.bt_sub_back.setMaximumSize(size_buttons,size_buttons)
+        self.bt_sub_back.clicked.connect(OmxPlayer.instance.sub_back)
+        
+        pixmap = QPixmap('data/sub_forward.png')
+        self.bt_sub_forward = PicButton(pixmap)
+        self.bt_sub_forward.setMaximumSize(size_buttons,size_buttons)
+        self.bt_sub_forward.clicked.connect(OmxPlayer.instance.sub_forward)
+        
+        self.buttons_layout.addWidget(self.bt_sub_back)
         self.buttons_layout.addWidget(self.bt_back_s)
         self.buttons_layout.addWidget(self.bt_back)
         self.buttons_layout.addWidget(self.bt_play_pause)
         self.buttons_layout.addWidget(self.bt_stop)
         self.buttons_layout.addWidget(self.bt_forward)
         self.buttons_layout.addWidget(self.bt_forward_s)
+        self.buttons_layout.addWidget(self.bt_sub_forward)
         
     def on_play(self):
         pixmap = QPixmap('data/pause.png')
