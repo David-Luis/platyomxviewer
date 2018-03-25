@@ -49,4 +49,14 @@ class OmxPlayer():
             print("Sending q")
             self.process.send('q')
             self.observer.on_stop()
+            
+    def back(self):
+        if self.process and self.state == OmxPlayer.PLAYING:
+            print("Sending left")
+            self.process.send('\x1b\x5b\x44')
+            
+    def forward(self):
+        if self.process and self.state == OmxPlayer.PLAYING:
+            print("Sending right")
+            self.process.send('\x1b\x5b\x43')
     
