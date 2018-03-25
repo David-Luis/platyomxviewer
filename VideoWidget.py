@@ -5,7 +5,7 @@ from PyQt5.QtCore import *
 from pathlib import Path
 
 from PicButton import PicButton
-import OmxPlayer
+from OmxPlayer import OmxPlayer
 
 import os
 
@@ -54,4 +54,4 @@ class VideoWidget(QGroupBox):
         self.bt_image.set_pixmap(pixmap)
 
     def on_clicked(self):
-        OmxPlayer.play(self.video_file["file_path"])
+        OmxPlayer.instance.play(self.video_file["file_path"])

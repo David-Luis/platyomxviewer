@@ -5,6 +5,9 @@ from PyQt5.QtGui import *
 from VideoWidget import VideoWidget
 from VideosListWidget import VideosListWidget
 
+from PicButton import PicButton
+from OmxPlayer import OmxPlayer
+
 import os
 from pathlib import Path
 
@@ -19,8 +22,13 @@ class MainView(QMainWindow):
         self.root_path = (str(Path.home()) + "/Downloads").replace("\\", "/")
         self.video_files = []
 
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+        self.main_layout = QVBoxLayout()
+
         self.search_video_files()
         self.create_videos_list()
+        self.create_control_buttons()
 
         self.show()
 
@@ -42,9 +50,6 @@ class MainView(QMainWindow):
                     self.video_files.append({"file_path": file_path.replace("\\", "/"), "filename": filename})
 
     def create_videos_container(self):
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
-        self.main_layout = QHBoxLayout()
         self.central_widget.setLayout(self.main_layout)
         self.videos_widget = VideosListWidget()
         self.main_layout.addWidget(self.videos_widget)
@@ -55,6 +60,17 @@ class MainView(QMainWindow):
         for video_file in self.video_files:
             video_widget = VideoWidget(video_file)
             self.videos_widget.add_video(video_widget)
+            
+    def create_control_buttons(self):
+        self.buttons_layout = QHBoxLayout()
+        self.main_layout.addLayout(self.buttons_layout)
+        
+        pixmap = QPixmap('data/pause.png')
+        self.bt_pause = PicButton(pixmap)
+        self.bt_pause.setMaximumSize(100,100)
+        self.buttons_layout.addWidget(self.bt_pause)
+        self.bt_pause.clicked.connect(OmxPlayer.instance.pause_resume)
+
 
 
 
