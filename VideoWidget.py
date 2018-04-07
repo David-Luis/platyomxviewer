@@ -12,8 +12,11 @@ import os
 import ffmpy
 
 class VideoWidget(QGroupBox):
-    def __init__(self, video_file):
+    def __init__(self, main_view, video_file):
         super().__init__()
+        
+        self.main_view = main_view
+        
         self.main_layout = QVBoxLayout()
         self.setLayout(self.main_layout)
 
@@ -27,6 +30,12 @@ class VideoWidget(QGroupBox):
         self.main_layout.addWidget(self.bt_image)
         self.bt_image.clicked.connect(self.on_clicked)
 
+        if video_file["new"]:
+            self.lb_new = QLabel("NEW!")
+            self.lb_new.setStyleSheet("QLabel { color : blue; }");
+            self.lb_new.setAlignment(Qt.AlignCenter)
+            self.main_layout.addWidget(self.lb_new)
+        
         self.lb_name = QLabel(video_file["filename"])
         self.lb_name.setAlignment(Qt.AlignCenter)
         self.main_layout.addWidget(self.lb_name)
@@ -57,4 +66,6 @@ class VideoWidget(QGroupBox):
         self.bt_image.set_pixmap(pixmap)
 
     def on_clicked(self):
+        self.lb_new.setText("")
+        self.main_view.save_video_played(self.video_file["filename"])
         OmxPlayer.instance.play(self.video_file["file_path"])

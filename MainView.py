@@ -9,7 +9,22 @@ from PicButton import PicButton
 from OmxPlayer import OmxPlayer
 
 import os
+import configparser
+import ast
+
 from pathlib import Path
+
+class VideoInfo(dict):
+    def __eq__(self, other):
+        self.filename == other.filename
+        
+    def __lt__(self, other):
+        if self["new"] and not other["new"]:
+            return True
+        elif other["new"] and not self["new"]:
+            return False
+        
+        return self['filename'].lower() < other['filename'].lower()
 
 class MainView(QMainWindow):
     def __init__(self, app):
@@ -39,6 +54,54 @@ class MainView(QMainWindow):
                 return True
 
         return False
+    
+    def __get_config(self):
+        output_folder = (str(Path.home()) + "/.platyomxplayer/").replace("\\", "/")
+        if not os.path.isdir(output_folder):
+            os.makedirs(output_folder)
+
+        output_path = output_folder + "user.ini"
+        
+        if not os.path.exists(output_path):
+                with open(output_path, 'w'): pass
+                
+        config = configparser.ConfigParser()
+        config.read(output_path)
+        
+        return config
+    
+    def __save_config(self, config):
+        output_folder = (str(Path.home()) + "/.platyomxplayer/").replace("\\", "/")
+        if not os.path.isdir(output_folder):
+            os.makedirs(output_folder)
+
+        output_path = output_folder + "user.ini"
+        
+        if not os.path.exists(output_path):
+            with open(output_path, 'w'): pass
+        
+        with open(output_path, 'w') as configfile:
+            config.write(configfile)
+    
+    def is_video_new(self, filename):
+        config = self.__get_config()
+        
+        if 'PLAYED' in config:
+            return filename not in config['PLAYED']['filenames']
+        
+        return True
+    
+    def save_video_played(self, filename):
+        config = self.__get_config()
+        
+        if 'PLAYED' in config:
+            filenames = ast.literal_eval(config['PLAYED']['filenames'])
+            filenames.append(filename)
+            config['PLAYED'] = {'filenames':filenames}
+        else:
+            config['PLAYED'] = {'filenames':[filename]}
+        
+        self.__save_config(config)
 
     def search_video_files(self):
         self.video_files = []
@@ -47,7 +110,13 @@ class MainView(QMainWindow):
             for filename in files:
                 if self.is_video_file(filename):
                     file_path = os.path.join(root, filename)
-                    self.video_files.append({"file_path": file_path.replace("\\", "/"), "filename": filename})
+                    video_info = VideoInfo()
+                    video_info["file_path"] = file_path.replace("\\", "/")
+                    video_info["filename"] = filename
+                    video_info["new"] = self.is_video_new(filename)
+                    self.video_files.append(video_info)
+
+        self.video_files.sort()
 
     def create_videos_container(self):
         self.central_widget.setLayout(self.main_layout)
@@ -58,7 +127,7 @@ class MainView(QMainWindow):
         self.create_videos_container()
 
         for video_file in self.video_files:
-            video_widget = VideoWidget(video_file)
+            video_widget = VideoWidget(self, video_file)
             self.videos_widget.add_video(video_widget)
             
     def create_control_buttons(self):
