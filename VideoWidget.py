@@ -37,17 +37,20 @@ class VideoWidget(QGroupBox):
         self.create_preview_img()
 
     def create_preview_img(self):
-        output_folder = (str(Path.home()) + "/.platyomxplayertmp/").replace("\\", "/")
-        if not os.path.isdir(output_folder):
-            os.makedirs(output_folder)
+        try:
+            output_folder = (str(Path.home()) + "/.platyomxplayertmp/").replace("\\", "/")
+            if not os.path.isdir(output_folder):
+                os.makedirs(output_folder)
 
-        output_path = output_folder + self.video_file["filename"] + ".jpg"
-        if not os.path.isfile(output_path):
-            ff = ffmpy.FFmpeg(inputs={self.video_file["file_path"]: None},
-                              outputs={output_path: '-ss 00:00:04 -t 00:00:2 -s 220x124 -r 1 -f mjpeg'})
-            ff.run()
-            
-        self.set_img_preview(output_path)
+            output_path = output_folder + self.video_file["filename"] + ".jpg"
+            if not os.path.isfile(output_path):
+                ff = ffmpy.FFmpeg(inputs={self.video_file["file_path"]: None},
+                                  outputs={output_path: '-ss 00:00:04 -t 00:00:2 -s 220x124 -r 1 -f mjpeg'})
+                ff.run()
+                
+            self.set_img_preview(output_path)
+        except:
+            pass
 
     def set_img_preview(self, path):
         pixmap = QPixmap(path)
